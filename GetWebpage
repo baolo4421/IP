@@ -1,0 +1,34 @@
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class GetWebpage {
+	
+public static void main(String[] args) {
+	
+    URL url;
+    InputStream input_stream = null;
+    BufferedReader buffer_reader;
+    String source_line;
+
+    try {
+        url = new URL("http://m.mlb.com/player/628356/jung-ho-kang");
+        input_stream = url.openStream();  // throws an IOException
+        buffer_reader = new BufferedReader(new InputStreamReader(input_stream));
+
+        while ((source_line = buffer_reader.readLine()) != null) {
+            System.out.println(source_line);
+        }
+    } catch (MalformedURLException mue) {
+         mue.printStackTrace();
+    } catch (IOException ioe) {
+         ioe.printStackTrace();
+    } finally {
+        try {
+            if (input_stream != null) input_stream.close();
+        } catch (IOException ioe) {
+            System.out.println(ioe);
+        }
+    }
+}
+}
