@@ -1,0 +1,65 @@
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.*;
+
+public class GetLinkpage {
+    public static void main(String[] args) throws IOException {
+        String url = "http://m.mlb.com/player/628356/jung-ho-kang";
+        print("Fetching %s...", url);
+
+        Document doc = Jsoup.connect(url).get();
+        Elements links = doc.select("a[href]");
+        Elements media = doc.select("[src]");
+        Elements imports = doc.select("link[href]");
+        
+        File file = new File("C:/Users/명정/Desktop/개발/Crawler/Home.html");
+        file.createNewFile();
+        FileWriter writer = new FileWriter(file);
+    	writer.write(doc.body().toString());
+        writer.flush();
+        writer.close();
+        
+        print("\nMedia: (%d)", media.size());
+        for (Element src : media) {
+            if (src.tagName().equals("img"))
+                print(" * %s: <%s> %sx%s (%s)",
+                        src.tagName(), src.attr("abs:src"), src.attr("width"), src.attr("height"),
+                        trim(src.attr("alt"), 20));
+            else
+                print(" * %s: <%s>", src.tagName(), src.attr("abs:src"));
+        }
+
+        print("\nImports: (%d)", imports.size());
+        for (Element link : imports) {
+            print(" * %s <%s> (%s)", link.tagName(),link.attr("abs:href"), link.attr("rel"));
+        }
+
+        print("\nLinks: (%d)", links.size());
+        for (Element link : links) {
+            print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
+        }
+        
+        for (Element link : links) {
+            doc = Jsoup.connect(link.attr("abs:href")).timeout(300000000).userAgent("Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.44 Safari/534.7").ignoreHttpErrors(true).followRedirects(true).ignoreContentType(true).get();
+            file = new File("C:/Users/명정/Desktop/개발/Crawler/" + trim(link.text(), 35) + ".html");
+            writer = new FileWriter(file);
+        	writer.write(doc.body().toString());
+            writer.flush();
+            writer.close();
+        }
+    }
+
+    private static void print(String msg, Object... args) {
+        System.out.println(String.format(msg, args));
+    }
+
+    private static String trim(String s, int width) {
+        if (s.length() > width)
+            return s.substring(0, width-1) + ".";
+        else
+            return s;
+    }
+}
