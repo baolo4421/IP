@@ -1,0 +1,61 @@
+import java.io.BufferedOutputStream; 
+import java.io.BufferedReader; 
+import java.io.FileOutputStream; 
+import java.io.IOException; 
+import java.io.InputStream; 
+import java.io.InputStreamReader; 
+import java.io.PrintWriter; 
+import java.net.Socket; 
+
+ 
+import javax.swing.JOptionPane; 
+
+ 
+public class FileClient { 
+
+ 
+    public static void main(String[] args) throws IOException { 
+        Socket s = new Socket("localhost", 8878); 
+        try { 
+            String message = null; 
+            PrintWriter out = 
+                new PrintWriter(s.getOutputStream(), true); 
+            BufferedReader input = 
+                new BufferedReader(new InputStreamReader(s.getInputStream())); 
+            do { 
+                String answer = input.readLine(); 
+                JOptionPane.showMessageDialog(null, answer); 
+                message = JOptionPane.showInputDialog("Pilih file :"); 
+                out.println(message); 
+                if (message.equals("1")) { 
+                    byte[] mybytearray = new byte[1024]; 
+                    InputStream is = s.getInputStream(); 
+                    FileOutputStream fos = new FileOutputStream("D:/Airen/Airen.txt"); 
+                    BufferedOutputStream bos = new BufferedOutputStream(fos); 
+                    int bytesRead = is.read(mybytearray, 0, mybytearray.length); 
+                    bos.write(mybytearray, 0, bytesRead); 
+                    bos.close(); 
+                } else if (message.equals("2")) { 
+                    byte[] mybytearray = new byte[1024]; 
+                    InputStream is = s.getInputStream(); 
+                    FileOutputStream fos = new FileOutputStream("D:/Airen/Astuc.txt"); 
+                    BufferedOutputStream bos = new BufferedOutputStream(fos); 
+                    int bytesRead = is.read(mybytearray, 0, mybytearray.length); 
+                    bos.write(mybytearray, 0, bytesRead); 
+                    bos.close(); 
+                } else if (message.equals("3")) { 
+                    byte[] mybytearray = new byte[1024]; 
+                    InputStream is = s.getInputStream(); 
+                    FileOutputStream fos = new FileOutputStream("D:/Airen/Hana.txt"); 
+                    BufferedOutputStream bos = new BufferedOutputStream(fos); 
+                    int bytesRead = is.read(mybytearray, 0, mybytearray.length); 
+                    bos.write(mybytearray, 0, bytesRead); 
+                    bos.close(); 
+                } 
+            } while (!(message.equals("Thank you"))); 
+        } finally { 
+            if (s != null) s.close(); 
+        } 
+        System.exit(0); 
+    } 
+} 
