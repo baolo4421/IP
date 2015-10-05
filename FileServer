@@ -1,0 +1,94 @@
+import java.io.BufferedInputStream; 
+import java.io.BufferedReader; 
+import java.io.File; 
+import java.io.FileInputStream; 
+import java.io.IOException; 
+import java.io.InputStreamReader; 
+import java.io.OutputStream; 
+import java.io.PrintWriter; 
+import java.net.ServerSocket; 
+import java.net.Socket; 
+ 
+ 
+/** 
+ * A TCP server that runs on port 9090.  When a client connects, it 
+ * sends the client the current date and time, then closes the 
+ * connection with that client.  Arguably just about the simplest 
+ * server you can write. 
+ */ 
+public class FileServer { 
+
+
+    /** 
+     * Runs the server. 
+     */ 
+    public static void main(String[] args) throws IOException { 
+        ServerSocket listener = new ServerSocket(8878); 
+        try { 
+            while (true) { 
+                Socket socket = listener.accept(); 
+                File myFile = null; 
+                BufferedInputStream bis = null; 
+                OutputStream os = null; 
+                String line = null; 
+   			PrintWriter toClient =  
+    				new PrintWriter(socket.getOutputStream(),true); 
+ 			BufferedReader fromClient = 
+ 				new BufferedReader( 
+    						new InputStreamReader(socket.getInputStream())); 
+    			System.out.println("Waiting for client on port " + listener.getLocalPort() + "...");  
+    			System.out.println("Just connected to " + socket.getRemoteSocketAddress());  
+        		toClient.println("1.Airen.txt || 2.Astuc.txt || 3.Hana.txt"); 
+        		//Iteration 
+                do { 
+           			line = fromClient.readLine(); 
+            		System.out.println("Server received: " + line); 
+            		if (line.equals("1")) { 
+            			myFile = new File ("D:/Airen.txt"); 
+            		    byte[] mybytearray = new byte[(int) myFile.length()]; 
+            		    bis = new BufferedInputStream(new FileInputStream(myFile)); 
+            		    bis.read(mybytearray, 0, mybytearray.length); 
+            		    os = socket.getOutputStream(); 
+            		    os.write(mybytearray, 0, mybytearray.length); 
+            		    os.flush(); 
+                		toClient.println("Ini file Airen"); 
+            	        System.out.println("Done!"); 
+           			} else if (line.equals("2")) { 
+            			myFile = new File ("D:/Astuc.txt"); 
+            			byte[] mybytearray = new byte[(int) myFile.length()]; 
+            		    bis = new BufferedInputStream(new FileInputStream(myFile)); 
+            		    bis.read(mybytearray, 0, mybytearray.length); 
+            		    os = socket.getOutputStream(); 
+            		    os.write(mybytearray, 0, mybytearray.length); 
+            		    os.flush(); 
+            		    toClient.println("Ini file Astuc"); 
+            	        System.out.println("Done!"); 
+           			} else if (line.equals("3")) { 
+             			myFile = new File ("D:/Hana.txt"); 
+             			byte[] mybytearray = new byte[(int) myFile.length()]; 
+            		    bis = new BufferedInputStream(new FileInputStream(myFile)); 
+             		    bis.read(mybytearray, 0, mybytearray.length); 
+             		    os = socket.getOutputStream(); 
+             		    os.write(mybytearray, 0, mybytearray.length); 
+             		    os.flush(); 
+               			toClient.println("Ini file Hana!"); 
+            	        System.out.println("Done!"); 
+           			} else if (line.equals("Thank you")) { 
+                			toClient.println("Thank you for connecting to " + socket.getLocalSocketAddress() +"Bye");  
+             		} else { 
+                 		toClient.println("Wrong input!"); 
+             		} 
+                 } while (!(line.equals("Thank you"))); 
+                  
+                if (bis != null) bis.close(); 
+                if (os != null) os.close(); 
+                if (socket!=null) socket.close(); 
+
+ 
+            } 
+        } 
+        finally { 
+            if (listener != null) listener.close(); 
+        } 
+    } 
+} 
